@@ -14,21 +14,91 @@ from tensorflow.keras import layers, models
 
 
 # Sidebar for page selection
-page = st.sidebar.selectbox("Choose a page", ["Data Overview", "Train Models (Linear Regression & Decision Tree)", "Train Neural Network", "Documents"])
+page = st.sidebar.selectbox("Choose a page", ["Documents 1", "Models (Linear Regression & Decision Tree)", "Documents 2", "Models Neural Network(CNNs)"])
 
-if page == "Data Overview":
+if page == "Documents 1":
     # California Housing Dataset (Scikit-learn)
     data = fetch_california_housing()
     X = pd.DataFrame(data.data, columns=data.feature_names)
     y = data.target
 
-    st.write("### California Housing Dataset Overview")
+    st.write("# Models (Linear Regression & Decision Tree)")
+    st.write("### **Dataset: Scikit-learn(California Housing Dataset)**")
     st.write("**Features:**")
     st.write(X.head())
     st.write("**Target (House Prices):**")
     st.write(pd.Series(y).head())
+    st.write("**ข้อมูลชุดข้อมูล:**")
+    st.write(
+        """
+        - **California Housing Dataset** เป็นชุดข้อมูลที่มีข้อมูลเกี่ยวกับราคาบ้านในรัฐแคลิฟอร์เนีย  
+        - ประกอบด้วยคุณลักษณะหลายตัว เช่น จำนวนห้องพัก, อายุของบ้าน, ความหนาแน่นของประชากร ฯลฯ  
+        - ชุดข้อมูลนี้ใช้ในการทำนายราคาบ้าน โดยมีตัวแปรตามเป็นราคาบ้าน (ในหน่วยพันดอลลาร์)   
+        """
+    )
 
-elif page == "Train Models (Linear Regression & Decision Tree)":
+    st.write("## แนวทางการพัฒนาโมเดล")
+    st.write("### การเตรียมข้อมูล")
+    st.write(
+        """
+        - ใช้ **California Housing Dataset จาก Scikit-learn** ซึ่งเป็นชุดข้อมูลเกี่ยวกับราคาบ้านในแคลิฟอร์เนีย
+        - แยกคุณลักษณะ (X) และค่าตอบสนอง (y) โดย X ประกอบด้วยคุณลักษณะของบ้าน เช่น จำนวนห้อง, อายุของบ้าน, ความหนาแน่นของประชากร เป็นต้น ส่วน y คือราคาบ้าน
+        - แบ่งข้อมูลเป็นชุดฝึก (80%) และชุดทดสอบ (20%) ด้วย `train_test_split()`
+        - ใช้ **StandardScaler** ปรับขนาดข้อมูลให้เป็นสเกลมาตรฐาน **(Z-score Normalization)** เพื่อช่วยให้โมเดลมีประสิทธิภาพที่ดีขึ้น
+        """)
+    st.write("### ทฤษฎีของอัลกอริทึมที่พัฒนา")
+    st.write("#### 1.Linear Regression")
+    st.write(
+        """
+        เป็นโมเดลเชิงเส้นที่พยายามหาความสัมพันธ์ระหว่างตัวแปรอิสระ (X) กับตัวแปรตาม (y) 
+        โดยอยู่ในรูปของสมการเส้นตรง:
+        """
+    )
+    st.latex(r"y = w_1X_1 + w_2X_2 + ... + w_nX_n + b")
+    st.write(
+        """
+        ใช้วิธี **Ordinary Least Squares (OLS)** เพื่อลดค่าความคลาดเคลื่อนรวม (Residual Sum of Squares)
+
+        **ค่าที่วัดผลลัพธ์ของโมเดล:**
+        - **Mean Squared Error (MSE):** คำนวณค่าความคลาดเคลื่อนของโมเดล
+        - **R² Score:** วัดว่าโมเดลอธิบายความแปรปรวนของข้อมูลได้ดีเพียงใด
+        """
+    )
+    st.write("#### 2.Decision Tree Regressor")
+    st.write(
+        """
+        เป็นโมเดลที่ใช้ต้นไม้ตัดสินใจในการแบ่งข้อมูลเป็นช่วง ๆ โดยใช้เงื่อนไขที่ลด **Mean Squared Error (MSE)** มากที่สุด
+        """
+    )
+
+    st.write("#### วิธีการตัดสินใจของต้นไม้:")
+    st.write(
+        """
+        - คำนวณความคลาดเคลื่อนของข้อมูลแต่ละกลุ่ม  
+        - เลือกคุณลักษณะที่แบ่งข้อมูลแล้วทำให้ค่าความคลาดเคลื่อนลดลงมากที่สุด  
+        - ทำซ้ำไปเรื่อย ๆ จนถึงเงื่อนไขหยุด เช่น ขนาดกลุ่มข้อมูลที่เล็กเกินไป  
+
+        **พารามิเตอร์ที่ใช้ในโค้ดนี้:**  
+        - `min_samples_split=10` → กำหนดให้ต้องมีข้อมูลอย่างน้อย 10 ตัวก่อนที่โหนดจะถูกแบ่ง  
+        - `min_samples_leaf=16` → กำหนดให้ใบของต้นไม้ต้องมีข้อมูลอย่างน้อย 16 ตัว เพื่อป้องกัน Overfitting  
+        """
+    )
+
+    st.write("### ขั้นตอนการพัฒนา")
+    st.write(
+        """
+        1. **Train โมเดล Linear Regression** ด้วย `model.fit(X_train, y_train)`  
+        2. **Train โมเดล Decision Tree Regressor** ด้วย `dt_model.fit(X_train, y_train)`  
+        3. **ทดสอบโมเดล** กับชุดข้อมูลทดสอบ `X_test`  
+        4. **วัดผลลัพธ์ของโมเดล** ด้วยค่า **MSE** และ **R² Score**  
+        5. **แสดงผลการทำนายของโมเดล** ผ่านกราฟ **Actual vs Predicted House Prices**  
+           เพื่อดูว่าโมเดลทำนายได้ดีเพียงใด  
+        """
+    )
+
+
+
+elif page == "Models (Linear Regression & Decision Tree)":
     # California Housing Dataset (Scikit-learn)
     data = fetch_california_housing()
     X = pd.DataFrame(data.data, columns=data.feature_names)  # กำหนด X ให้ชัดเจน
@@ -93,7 +163,81 @@ elif page == "Train Models (Linear Regression & Decision Tree)":
 
 
 
-elif page == "Train Neural Network":
+elif page == "Documents 2":
+    # Display documents or other information
+    st.write("# Models Neural Network (CNNs)")
+    st.write("### **Dataset: EuroSAT (TensorFlow Datasets)**")
+    st.write(
+        """
+        EuroSAT Dataset มีคุณสมบัติเป็น **13 Spectral Bands** ที่ได้จากดาวเทียม Sentinel-2  
+        แต่ละ Feature มีช่วงค่าความยาวคลื่นที่แตกต่างกัน ซึ่งช่วยให้สามารถจำแนกประเภทของภาพได้ดีขึ้น  
+        """
+    )
+    st.write("**Feature:**")
+
+    feature_data = {
+        "Feature": ["B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B08a", "B09", "B10", "B11", "B12"],
+        "รายละเอียด": [
+            "Coastal aerosol", "Blue", "Green", "Red", "Vegetation red edge 1",
+            "Vegetation red edge 2", "Vegetation red edge 3", "Near-infrared (NIR)",
+            "Narrow NIR", "Water vapor", "Shortwave infrared (SWIR) - Cirrus",
+            "SWIR 1", "SWIR 2"
+        ],
+        "ช่วงค่าของ Band (nm)": [
+            "443", "490", "560", "665", "705", "740", "783", "842", "865", "945", "1375", "1610", "2190"
+        ]
+    }
+    df_features = pd.DataFrame(feature_data)
+    st.dataframe(df_features)
+
+    st.write("**ข้อมูลชุดข้อมูล:**")
+    st.write(
+        """
+        - **EuroSAT Dataset** เป็นชุดข้อมูลภาพถ่ายดาวเทียมจาก Sentinel-2  
+        - แบ่งออกเป็น **10 หมวดหมู่** เช่น อาคาร, ป่าไม้, ทะเลสาบ ฯลฯ  
+        - ใช้เป็น **Classification Task** สำหรับการจำแนกประเภทภาพ  
+        """
+    )
+
+    st.write("## แนวทางการพัฒนาโมเดล")
+    st.write("### **การเตรียมข้อมูล**")
+    st.write(
+        """
+        - โหลดข้อมูลจาก TensorFlow Datasets (`tfds.load('eurosat', with_info=True, as_supervised=True)`)  
+        - แบ่งข้อมูลเป็น **80% สำหรับ Train** และ **20% สำหรับ Test**  
+        - ใช้ฟังก์ชัน `preprocess_image()` เพื่อ **Normalize** ค่า Pixel ให้อยู่ในช่วง **[0,1]**  
+        - ใช้ **batch(32)** และ **prefetch(tf.data.AUTOTUNE)** เพื่อปรับปรุงประสิทธิภาพการประมวลผล  
+        """
+    )
+
+    st.write("### ทฤษฎีของอัลกอริทึมที่พัฒนา")
+    st.write("#### **Convolutional Neural Networks (CNNs)**")
+    st.write(
+        """
+        - **CNNs** เป็นโมเดล Deep Learning ที่ใช้การ Convolution เพื่อลดขนาดภาพและดึงคุณลักษณะที่สำคัญออกมา  
+        - แต่ละเลเยอร์ของ CNN ประกอบด้วย:  
+            - **Convolutional Layer (Conv2D)** → สกัดคุณลักษณะจากภาพ  
+            - **MaxPooling Layer (MaxPooling2D)** → ลดขนาดภาพเพื่อให้โมเดลเรียนรู้ได้เร็วขึ้น  
+            - **Fully Connected Layer (Dense Layer)** → เชื่อมโยงคุณลักษณะเพื่อทำการจำแนกประเภท  
+        """
+    )
+
+
+    st.write("### ขั้นตอนการพัฒนา")
+    st.write(
+        """
+        1. **Train โมเดล CNN** ด้วย `cnn_model.fit(train_dataset, epochs=10, validation_data=test_dataset)`  
+        2. **ทดสอบโมเดล** กับชุดข้อมูล `test_dataset`  
+        3. **วัดผลลัพธ์ของโมเดล** ด้วยค่า **Test Accuracy** และ **Test Loss**  
+        4. **แสดงผล Training vs Validation Accuracy** ด้วยกราฟ  
+        5. **แสดงตัวอย่างภาพที่โมเดลทำนาย** พร้อมค่าจริงเพื่อดูผลลัพธ์  
+        """
+    )
+
+
+
+
+elif page == "Models Neural Network(CNNs)":
     # EuroSAT Dataset (TensorFlow Datasets)
     dataset, info = tfds.load('eurosat', with_info=True, as_supervised=True)
     
@@ -127,7 +271,7 @@ elif page == "Train Neural Network":
     cnn_model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
     # Train the model
-    history = cnn_model.fit(train_dataset, epochs=10, validation_data=test_dataset)
+    history = cnn_model.fit(train_dataset, epochs=8, validation_data=test_dataset)
 
     # Show training and validation accuracy over epochs
     st.write("### Model Training History")
@@ -163,24 +307,25 @@ elif page == "Train Neural Network":
 
     st.pyplot(fig)
 
+    st.write(
+        """
+            0.   AnnualCrop
+            1.   Forest
+            2.   HerbaceousVegetation  
+            3.   Highway  
+            4.   Industrial
+            5.   Pasture
+            6.   PermanentCrop
+            7.   Residential
+            8.   River
+            9.  SeaLake
+        """
+    )
 
 
-    st.write("### CNN Model Training Completed!")
+
+    
 
 
-elif page == "Documents":
-    # Display documents or other information
-    st.write("### Project Documentation")
-    st.write("""
-        This project involves training different machine learning models on two datasets:
-        1. **California Housing Dataset** from Scikit-learn:
-            - Used for Linear Regression and Decision Tree Regressor.
-            - The task is to predict house prices based on various features.
 
-        2. **EuroSAT Dataset** from TensorFlow Datasets:
-            - Used for training a Convolutional Neural Network (CNN).
-            - The task is to classify images into categories such as 'Forest', 'Highway', 'Residential', etc.
-        
-        The models are evaluated using appropriate metrics like Mean Squared Error (MSE), R² Score, and Accuracy.
-        """)
 
