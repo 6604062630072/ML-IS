@@ -1,0 +1,15 @@
+import pandas as pd
+from sklearn.datasets import fetch_california_housing
+
+# โหลดข้อมูล
+data = fetch_california_housing()
+
+# แปลงเป็น DataFrame
+df = pd.DataFrame(data.data, columns=data.feature_names)
+df["Target"] = data.target  # เพิ่มคอลัมน์ราคาบ้าน
+
+# บันทึกเป็นไฟล์ CSV
+csv_filename = "california_housing.csv"
+df.to_csv(csv_filename, index=False)
+
+print(f"ไฟล์ถูกบันทึกเป็น {csv_filename}")
