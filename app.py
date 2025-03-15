@@ -28,71 +28,70 @@ if page == "Documents 1":
     st.write(X.head())
     st.write("**Target (House Prices):**")
     st.write(pd.Series(y).head())
-    st.write("**ข้อมูลชุดข้อมูล:**")
+    st.write("**Dataset Description:**")
     st.write(
         """
-        - **California Housing Dataset** เป็นชุดข้อมูลที่มีข้อมูลเกี่ยวกับราคาบ้านในรัฐแคลิฟอร์เนีย  
-        - ประกอบด้วยคุณลักษณะหลายตัว เช่น จำนวนห้องพัก, อายุของบ้าน, ความหนาแน่นของประชากร ฯลฯ  
-        - ชุดข้อมูลนี้ใช้ในการทำนายราคาบ้าน โดยมีตัวแปรตามเป็นราคาบ้าน (ในหน่วยพันดอลลาร์)   
+        - **California Housing Dataset** is a dataset that contains information about house prices in California  
+        - It includes several features like the number of rooms, age of the house, population density, etc.  
+        - The dataset is used to predict house prices, where the target variable is the house price (in thousands of dollars).   
         """
     )
 
-    st.write("## แนวทางการพัฒนาโมเดล")
-    st.write("### การเตรียมข้อมูล")
+    st.write("## Model Development Approach")
+    st.write("### Data Preparation")
     st.write(
         """
-        - ใช้ **California Housing Dataset จาก Scikit-learn** ซึ่งเป็นชุดข้อมูลเกี่ยวกับราคาบ้านในแคลิฟอร์เนีย
-        - แยกคุณลักษณะ (X) และค่าตอบสนอง (y) โดย X ประกอบด้วยคุณลักษณะของบ้าน เช่น จำนวนห้อง, อายุของบ้าน, ความหนาแน่นของประชากร เป็นต้น ส่วน y คือราคาบ้าน
-        - แบ่งข้อมูลเป็นชุดฝึก (80%) และชุดทดสอบ (20%) ด้วย `train_test_split()`
-        - ใช้ **StandardScaler** ปรับขนาดข้อมูลให้เป็นสเกลมาตรฐาน **(Z-score Normalization)** เพื่อช่วยให้โมเดลมีประสิทธิภาพที่ดีขึ้น
-        """)
-    st.write("### ทฤษฎีของอัลกอริทึมที่พัฒนา")
-    st.write("#### 1.Linear Regression")
+        - We use the **California Housing Dataset from Scikit-learn**, which contains information about housing prices in California
+        - The features (X) include characteristics of the house such as number of rooms, age of the house, population density, etc., while the target variable (y) is the house price
+        - We split the data into training (80%) and testing (20%) sets using `train_test_split()`
+        - We use **StandardScaler** to normalize the data using **Z-score Normalization** to improve the model's performance
+        """
+    )
+    st.write("### Algorithm Theory for Developed Models")
+    st.write("#### 1. Linear Regression")
     st.write(
         """
-        เป็นโมเดลเชิงเส้นที่พยายามหาความสัมพันธ์ระหว่างตัวแปรอิสระ (X) กับตัวแปรตาม (y) 
-        โดยอยู่ในรูปของสมการเส้นตรง:
+        It is a linear model that tries to find the relationship between independent variables (X) and dependent variable (y) 
+        in the form of a linear equation:
         """
     )
     st.latex(r"y = w_1X_1 + w_2X_2 + ... + w_nX_n + b")
     st.write(
         """
-        ใช้วิธี **Ordinary Least Squares (OLS)** เพื่อลดค่าความคลาดเคลื่อนรวม (Residual Sum of Squares)
-
-        **ค่าที่วัดผลลัพธ์ของโมเดล:**
-        - **Mean Squared Error (MSE):** คำนวณค่าความคลาดเคลื่อนของโมเดล
-        - **R² Score:** วัดว่าโมเดลอธิบายความแปรปรวนของข้อมูลได้ดีเพียงใด
+        **Model Evaluation Metrics:**
+        - **Mean Squared Error (MSE):** Measures the deviation of the model
+        - **R² Score:** Measures how well the model explains the variance of the data
         """
     )
-    st.write("#### 2.Decision Tree Regressor")
+    st.write("#### 2. Decision Tree Regressor")
     st.write(
         """
-        เป็นโมเดลที่ใช้ต้นไม้ตัดสินใจในการแบ่งข้อมูลเป็นช่วง ๆ โดยใช้เงื่อนไขที่ลด **Mean Squared Error (MSE)** มากที่สุด
+        It is a model that uses a decision tree to split data into intervals, using conditions that minimize **Mean Squared Error (MSE)**
         """
     )
 
-    st.write("#### วิธีการตัดสินใจของต้นไม้:")
+    st.write("#### Decision Tree Split Process:")
     st.write(
         """
-        - คำนวณความคลาดเคลื่อนของข้อมูลแต่ละกลุ่ม  
-        - เลือกคุณลักษณะที่แบ่งข้อมูลแล้วทำให้ค่าความคลาดเคลื่อนลดลงมากที่สุด  
-        - ทำซ้ำไปเรื่อย ๆ จนถึงเงื่อนไขหยุด เช่น ขนาดกลุ่มข้อมูลที่เล็กเกินไป  
+        - It calculates the error for each group of data  
+        - Selects the feature that minimizes the error after splitting  
+        - Continues splitting until stopping conditions are met (e.g., too few samples in a group)  
 
-        **พารามิเตอร์ที่ใช้ในโค้ดนี้:**  
-        - `min_samples_split=10` → กำหนดให้ต้องมีข้อมูลอย่างน้อย 10 ตัวก่อนที่โหนดจะถูกแบ่ง  
-        - `min_samples_leaf=16` → กำหนดให้ใบของต้นไม้ต้องมีข้อมูลอย่างน้อย 16 ตัว เพื่อป้องกัน Overfitting  
+        **Parameters used in this code:**  
+        - `min_samples_split=10` → Requires at least 10 samples before a node is split  
+        - `min_samples_leaf=16` → Ensures leaf nodes have at least 16 samples to prevent overfitting  
         """
     )
 
-    st.write("### ขั้นตอนการพัฒนา")
+    st.write("### Development Steps")
     st.write(
         """
-        1. **Train โมเดล Linear Regression** ด้วย `model.fit(X_train, y_train)`  
-        2. **Train โมเดล Decision Tree Regressor** ด้วย `dt_model.fit(X_train, y_train)`  
-        3. **ทดสอบโมเดล** กับชุดข้อมูลทดสอบ `X_test`  
-        4. **วัดผลลัพธ์ของโมเดล** ด้วยค่า **MSE** และ **R² Score**  
-        5. **แสดงผลการทำนายของโมเดล** ผ่านกราฟ **Actual vs Predicted House Prices**  
-           เพื่อดูว่าโมเดลทำนายได้ดีเพียงใด  
+        1. **Train the Linear Regression model** using `model.fit(X_train, y_train)`  
+        2. **Train the Decision Tree Regressor model** using `dt_model.fit(X_train, y_train)`  
+        3. **Test the models** on the test dataset `X_test`  
+        4. **Evaluate the models** using **MSE** and **R² Score**  
+        5. **Display the model's prediction results** through a graph of **Actual vs Predicted House Prices**  
+           to evaluate the model's performance  
         """
     )
 
@@ -169,68 +168,68 @@ elif page == "Documents 2":
     st.write("### **Dataset: EuroSAT (TensorFlow Datasets)**")
     st.write(
         """
-        EuroSAT Dataset มีคุณสมบัติเป็น **13 Spectral Bands** ที่ได้จากดาวเทียม Sentinel-2  
-        แต่ละ Feature มีช่วงค่าความยาวคลื่นที่แตกต่างกัน ซึ่งช่วยให้สามารถจำแนกประเภทของภาพได้ดีขึ้น  
+        The EuroSAT Dataset contains **13 Spectral Bands** obtained from the Sentinel-2 satellite  
+        Each feature has a different wavelength range, which helps in better image classification  
         """
     )
-    st.write("**Feature:**")
+    st.write("**Features:**")
 
     feature_data = {
         "Feature": ["B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B08a", "B09", "B10", "B11", "B12"],
-        "รายละเอียด": [
+        "Description": [
             "Coastal aerosol", "Blue", "Green", "Red", "Vegetation red edge 1",
             "Vegetation red edge 2", "Vegetation red edge 3", "Near-infrared (NIR)",
             "Narrow NIR", "Water vapor", "Shortwave infrared (SWIR) - Cirrus",
             "SWIR 1", "SWIR 2"
         ],
-        "ช่วงค่าของ Band (nm)": [
+        "Band Wavelength (nm)": [
             "443", "490", "560", "665", "705", "740", "783", "842", "865", "945", "1375", "1610", "2190"
         ]
     }
     df_features = pd.DataFrame(feature_data)
     st.dataframe(df_features)
 
-    st.write("**ข้อมูลชุดข้อมูล:**")
+    st.write("**Dataset Information:**")
     st.write(
         """
-        - **EuroSAT Dataset** เป็นชุดข้อมูลภาพถ่ายดาวเทียมจาก Sentinel-2  
-        - แบ่งออกเป็น **10 หมวดหมู่** เช่น อาคาร, ป่าไม้, ทะเลสาบ ฯลฯ  
-        - ใช้เป็น **Classification Task** สำหรับการจำแนกประเภทภาพ  
+        - **EuroSAT Dataset** consists of satellite imagery from Sentinel-2  
+        - It is classified into **10 categories** such as buildings, forests, lakes, etc.  
+        - This dataset is used for **Classification Task** for image classification  
         """
     )
 
-    st.write("## แนวทางการพัฒนาโมเดล")
-    st.write("### **การเตรียมข้อมูล**")
+    st.write("## Model Development Approach")
+    st.write("### **Data Preparation**")
     st.write(
         """
-        - โหลดข้อมูลจาก TensorFlow Datasets (`tfds.load('eurosat', with_info=True, as_supervised=True)`)  
-        - แบ่งข้อมูลเป็น **80% สำหรับ Train** และ **20% สำหรับ Test**  
-        - ใช้ฟังก์ชัน `preprocess_image()` เพื่อ **Normalize** ค่า Pixel ให้อยู่ในช่วง **[0,1]**  
-        - ใช้ **batch(32)** และ **prefetch(tf.data.AUTOTUNE)** เพื่อปรับปรุงประสิทธิภาพการประมวลผล  
+        - Load data from TensorFlow Datasets (`tfds.load('eurosat', with_info=True, as_supervised=True)`)  
+        - Split data into **80% for Training** and **20% for Testing**  
+        - Use the function `preprocess_image()` to **Normalize** pixel values in the range of **[0,1]**  
+        - Use **batch(32)** and **prefetch(tf.data.AUTOTUNE)** to optimize processing speed  
         """
     )
 
-    st.write("### ทฤษฎีของอัลกอริทึมที่พัฒนา")
+    st.write("### Algorithm Theory for Developed Models")
     st.write("#### **Convolutional Neural Networks (CNNs)**")
     st.write(
         """
-        - **CNNs** เป็นโมเดล Deep Learning ที่ใช้การ Convolution เพื่อลดขนาดภาพและดึงคุณลักษณะที่สำคัญออกมา  
-        - แต่ละเลเยอร์ของ CNN ประกอบด้วย:  
-            - **Convolutional Layer (Conv2D)** → สกัดคุณลักษณะจากภาพ  
-            - **MaxPooling Layer (MaxPooling2D)** → ลดขนาดภาพเพื่อให้โมเดลเรียนรู้ได้เร็วขึ้น  
-            - **Fully Connected Layer (Dense Layer)** → เชื่อมโยงคุณลักษณะเพื่อทำการจำแนกประเภท  
+        - **CNNs** are deep learning models that use convolution operations to reduce image size and extract important features  
+        - Each layer of a CNN includes:  
+            - **Convolutional Layer (Conv2D)** → Extracts features from the image  
+            - **MaxPooling Layer (MaxPooling2D)** → Reduces image size to speed up learning  
+            - **Fully Connected Layer (Dense Layer)** → Links features to perform classification  
         """
     )
 
 
-    st.write("### ขั้นตอนการพัฒนา")
+    st.write("### Development Steps")
     st.write(
         """
-        1. **Train โมเดล CNN** ด้วย `cnn_model.fit(train_dataset, epochs=10, validation_data=test_dataset)`  
-        2. **ทดสอบโมเดล** กับชุดข้อมูล `test_dataset`  
-        3. **วัดผลลัพธ์ของโมเดล** ด้วยค่า **Test Accuracy** และ **Test Loss**  
-        4. **แสดงผล Training vs Validation Accuracy** ด้วยกราฟ  
-        5. **แสดงตัวอย่างภาพที่โมเดลทำนาย** พร้อมค่าจริงเพื่อดูผลลัพธ์  
+        1. **Train the CNN model** with `cnn_model.fit(train_dataset, epochs=10, validation_data=test_dataset)`  
+        2. **Test the model** on the `test_dataset`  
+        3. **Evaluate the model's performance** using **Test Accuracy** and **Test Loss**  
+        4. **Display training vs validation accuracy** through a graph  
+        5. **Show sample images with model predictions** and compare with actual values  
         """
     )
 
