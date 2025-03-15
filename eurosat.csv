@@ -1,0 +1,18 @@
+import tensorflow_datasets as tfds
+import pandas as pd
+
+# โหลด EuroSAT Dataset
+dataset_name = "eurosat"
+data = tfds.load(dataset_name, split="train", as_supervised=True, batch_size=-1)
+
+# ดึงข้อมูลภาพและ Label
+images, labels = data
+
+# แปลงเป็น DataFrame (บันทึกเฉพาะ labels)
+df = pd.DataFrame({"Label": labels.numpy()})
+
+# บันทึกเป็น CSV
+csv_filename = "eurosat.csv"
+df.to_csv(csv_filename, index=False)
+
+print(f"บันทึกไฟล์ CSV: {csv_filename}")
